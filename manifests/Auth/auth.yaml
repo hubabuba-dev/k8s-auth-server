@@ -1,0 +1,12 @@
+apiVersion: apiserver.config.k8s.io/v1beta1
+kind: AuthenticationConfiguration
+jwt:
+- issuer:
+    url: https://oidc-server.default.svc.cluster.local:8443
+    audiences:
+    - kubernetes
+  claimMappings:
+    username:
+      expression: 'claims.username'
+    uid:
+      expression: 'claims.sub'

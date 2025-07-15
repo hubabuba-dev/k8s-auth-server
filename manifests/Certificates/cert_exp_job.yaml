@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: get-serts
+  namespace: default
+spec:
+  template:
+    spec:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+      containers:
+      - name: certs
+        image: alpine
+        command: ["/bin/sh", "-c", "cp /etc/cert/* /hostpath"]
+        volumeMounts:
+          - name: cert
+            mountPath: /etc/cert
+          - name: expose
+            mountPath: /hostpath
+      restartPolicy: Never
+      volumes:
+        - name: cert
+          secret:
+            secretName: oidc-server-tls
+        - name: expose
+          hostPath:
+            path: /cert
+            type: Directory
+  backoffLimit: 4      

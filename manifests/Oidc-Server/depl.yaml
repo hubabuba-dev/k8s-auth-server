@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oidc-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oidc-server
+  template:
+    metadata:
+      labels:
+        app: oidc-server
+    spec:
+      containers:
+      - name: oidc-server
+        image: 192.168.3.3:5000/oidc:latest
+        volumeMounts:
+        - name: tls-volume
+          mountPath: "/certs"
+          readOnly: true
+        ports:
+        - containerPort: 8443
+      serviceAccountName: oidc
+      volumes:
+      - name: tls-volume
+        secret:
+          secretName: oidc-server-tls
